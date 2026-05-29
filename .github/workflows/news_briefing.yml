@@ -1,0 +1,54 @@
+name: news-briefing
+
+# 아침 뉴스/증권 브리핑 발송.
+#
+# cron: UTC 09~14시 매 5분 (사용자 거주 도시 새벽 윈도우 매 5분 정시 발송 보장).
+# schedule gate (user_preferences.news_briefing_time 또는 briefing_time+1분) 이 중복 차단.
+on:
+  schedule:
+    - cron: '*/5 9-14 * * *'
+  workflow_dispatch:
+    inputs:
+      skip_gate:
+        description: 'schedule gate 우회 (수동 재발송·검증용)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run news briefing (full mode, schedule-gated)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          MORNING_COMPANION_SUPABASE_JWT: ${{ secrets.MORNING_COMPANION_SUPABASE_JWT }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          OWNER_USER_ID: ${{ secrets.OWNER_USER_ID }}
+          USER_CITY: ${{ secrets.USER_CITY }}
+          USER_CITY_KO: ${{ secrets.USER_CITY_KO }}
+          USER_LAT: ${{ secrets.USER_LAT }}
+          USER_LON: ${{ secrets.USER_LON }}
+          USER_TZ: ${{ secrets.USER_TZ }}
+          USER_NWS_ZONE_PREFIX: ${{ secrets.USER_NWS_ZONE_PREFIX }}
+          USER_INTERESTS: ${{ secrets.USER_INTERESTS }}
+          TZ: ${{ secrets.USER_TZ }}
+          NEWS_SKIP_GATE: ${{ inputs.skip_gate }}
+        run: PYTHONPATH=. python scripts/dry_run_news_briefing.py --mode full

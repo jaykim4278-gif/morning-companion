@@ -1,0 +1,9 @@
+# morning-companion 의 영어회화·뉴스 브리핑 최소 의존성.
+
+httpx>=0.27          # PostgREST + Telegram + RSS HTTP
+pyyaml>=6.0          # schedules.yaml 로더
+tzdata>=2024.1       # Windows ZoneInfo 데이터
+python-dotenv>=1.0   # 로컬 .env 로드 (Actions 는 env: 로 직접 주입)
+feedparser>=6.0      # RSS 파싱 (뉴스)
+yfinance>=0.2        # 증시 지수 (S&P 500 등)
+edge-tts>=6.1        # 영어회화 음성(TTS) MP3 합성 (무료, 키 불필요)

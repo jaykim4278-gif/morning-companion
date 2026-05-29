@@ -1,0 +1,56 @@
+# Schedule defaults.
+# morning-companion 은 reminder 기능을 사용하지 않으며, 본 파일의 일부 메타 (timezone 등) 만
+# _schedule.py 로딩 시 참조한다.  metrics 섹션은 dormant.
+
+version: "2026-05-26"
+timezone: "America/Chicago"
+
+metrics:
+  bp:
+    label: "혈압"
+    targets:
+      - time: "08:00"
+        delay_min: 120        # 10:00 cutoff (08:00+120m)
+      # 저녁 target (20:00) 제거 — 저녁 알림은 사용자 자율
+    active: true
+
+  weight:
+    label: "체중"
+    targets:
+      - time: "07:30"
+        delay_min: 150        # 10:00 cutoff (07:30+150m)
+    active: true
+
+  glucose:
+    label: "혈당"
+    targets:
+      - time: "07:00"         # 공복 혈당
+        delay_min: 180        # 10:00 cutoff (07:00+180m)
+    active: true
+    note: "주 1~2회 측정 환자 — 매일 강요 금지"
+
+  exercise:
+    label: "운동"
+    targets:
+      - time: "17:00"
+        delay_min: 180
+    active: false             # 2026-05-26 PR A — 운동 리마인더 비활성 (저녁 알림 제거 정책)
+
+  sleep:
+    label: "수면"
+    targets: []               # 자동 수집 (Pixel Watch) — 리마인더 없음
+    active: false
+
+briefing:
+  morning:
+    time: "06:00"
+    weekdays: [0, 1, 2, 3, 4, 5, 6]   # 매일
+  weekly:
+    time: "21:00"
+    weekday: 6                         # 일요일 (0=월 기준)
+
+# Rate limits / safety
+rate_limits:
+  max_reminders_per_day_per_metric: 1
+  reminder_window_start: "10:00"      # 2026-05-26 PR A — 통합 체크 시각
+  reminder_window_end: "11:30"        # CDT/CST cron 양쪽 포함 (UTC 15+16 → local 10 or 11)
