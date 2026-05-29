@@ -49,6 +49,7 @@ jobs:
           USER_TZ: ${{ secrets.USER_TZ }}
           USER_NWS_ZONE_PREFIX: ${{ secrets.USER_NWS_ZONE_PREFIX }}
           USER_INTERESTS: ${{ secrets.USER_INTERESTS }}
+          USER_LOCAL_RSS: ${{ secrets.USER_LOCAL_RSS }}
           TZ: ${{ secrets.USER_TZ }}
           NEWS_SKIP_GATE: ${{ inputs.skip_gate }}
         run: PYTHONPATH=. python scripts/dry_run_news_briefing.py --mode full
